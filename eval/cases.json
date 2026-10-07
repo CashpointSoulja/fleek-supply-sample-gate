@@ -1,0 +1,23 @@
+{
+  "note": "Synthetic evaluation dataset. Each case is a hand-written sample inspection with the decision an experienced operator would expect. Illustrative only; not Fleek data.",
+  "cases": [
+    { "id": "E01", "name": "Seed pass: Northgate denim", "base": 0, "patch": {}, "expect": "LIMITED_PILOT" },
+    { "id": "E02", "name": "Seed fail: Harbour Lane fleece", "base": 1, "patch": {}, "expect": "REJECT" },
+    { "id": "E03", "name": "Seed thin: Kestrel denim", "base": 2, "patch": {}, "expect": "REQUEST_MORE_EVIDENCE" },
+    { "id": "E04", "name": "Perfect quality, no demand evidence", "base": 0, "patch": { "passCount": 40, "failCount": 0, "demand": { "buyerSegmentNamed": false, "priceBandMatchesLiveDemand": false, "sellThroughSignal": false, "repeatOrderPathKnown": false, "landedCostKnown": false } }, "expect": "REQUEST_MORE_EVIDENCE" },
+    { "id": "E05", "name": "Zero samples", "base": 0, "patch": { "sampleCount": 0, "passCount": 0, "failCount": 0, "observedInCategory": 0 }, "expect": "REQUEST_MORE_EVIDENCE" },
+    { "id": "E06", "name": "No photos at all", "base": 0, "patch": { "photosExpected": 0, "photosProvided": 0 }, "expect": "REQUEST_MORE_EVIDENCE" },
+    { "id": "E07", "name": "Straddling pass rate (34/40)", "base": 0, "patch": { "passCount": 34, "failCount": 6 }, "expect": "REQUEST_MORE_EVIDENCE" },
+    { "id": "E08", "name": "Clear quality fail on small sample (5/12)", "base": 2, "patch": { "passCount": 5, "failCount": 7 }, "expect": "REJECT" },
+    { "id": "E09", "name": "Mix bait-and-switch (promised 90, observed 60%)", "base": 0, "patch": { "observedInCategory": 24 }, "expect": "REJECT" },
+    { "id": "E10", "name": "Too little stock to repeat (200 pcs)", "base": 0, "patch": { "unitsAvailable": 200 }, "expect": "REJECT" },
+    { "id": "E11", "name": "Expensive sample (£12/pc)", "base": 0, "patch": { "sampleCostGBP": 480 }, "expect": "REJECT" },
+    { "id": "E12", "name": "Stock in kg with no conversion", "base": 0, "patch": { "unitsUnit": "kg", "unitsAvailable": 900 }, "expect": "REQUEST_MORE_EVIDENCE" },
+    { "id": "E13", "name": "Stock in kg with stated conversion", "base": 0, "patch": { "unitsUnit": "kg", "unitsAvailable": 900, "piecesPerUnit": 2.5 }, "expect": "LIMITED_PILOT" },
+    { "id": "E14", "name": "Cost not stated", "base": 0, "patch": { "sampleCostGBP": null }, "expect": "REQUEST_MORE_EVIDENCE" },
+    { "id": "E15", "name": "Invalid: pass + fail mismatch", "base": 0, "patch": { "passCount": 39 }, "expect": "INVALID" },
+    { "id": "E16", "name": "Invalid: negative sample cost", "base": 0, "patch": { "sampleCostGBP": -1 }, "expect": "INVALID" },
+    { "id": "E17", "name": "Kestrel with full evidence added", "base": 2, "patch": { "sampleCount": 40, "passCount": 37, "failCount": 3, "photosExpected": 120, "photosProvided": 116, "observedInCategory": 33, "piecesPerUnit": 60, "sampleCostGBP": 250, "demand": { "buyerSegmentNamed": true, "priceBandMatchesLiveDemand": true, "sellThroughSignal": true, "repeatOrderPathKnown": true, "landedCostKnown": false } }, "expect": "LIMITED_PILOT" },
+    { "id": "E18", "name": "Harbour Lane fleece re-sample, still mixed", "base": 1, "patch": { "passCount": 35, "failCount": 5, "observedInCategory": 29 }, "expect": "REJECT" }
+  ]
+}

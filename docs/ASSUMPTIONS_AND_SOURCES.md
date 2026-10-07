@@ -20,9 +20,9 @@ Screenshots of S2 and S3: `docs/brand/observed-*.png`.
 | A3 | A 95% Wilson lower bound is a reasonable conservative read of pass rate | Main quality gate | Back-test against first-batch outcomes |
 | A4 | 30 pieces, 80%, 90% photos, 10 pts mix gap, 500 pcs, £8/pc, 4/5 demand checks, 300 pcs / £2,500 pilot are sensible defaults | All are editable; defaults set behaviour | Calibrate with real sample and batch data |
 | A5 | Suppliers often quote kg or bales; pieces per unit varies a lot | Unit gate | Review real quotes |
-| A6 | Sample cost per piece is a usable proxy for first-order price | Cost gate | Compare to landed first-order cost |
+| A6 | Sample cost per piece is a usable proxy for first-order price; it is shown only as a labelled proxy, never as a verified first-order total | Cost gate, pilot proxy | Compare to landed first-order cost |
 | A7 | £5M annual GMV is used as an illustrative size for a category bet | Framing only; never derived from samples | Replace with the real target |
-| A8 | Demand-fit evidence (segment, price band, sell-through, repeat path, landed cost) exists elsewhere and is ticked by hand | Demand gate | Link to real demand data in v2 |
+| A8 | Demand-fit evidence (segment, price band, sell-through, repeat path, landed cost) exists elsewhere and is ticked by hand; landed cost is mandatory | Demand gate | Link to real demand data in v2 |
 
 ## Synthetic data
 Suppliers "Northgate Rag Sort", "Harbour Lane Vintage Co." and "Kestrel Bale Traders" and every number in `src/engine/seeds.ts` and `eval/cases.json` are invented for this concept. Any resemblance to a real business is unintended.

@@ -41,7 +41,13 @@ export const SEED_INSPECTIONS: Inspection[] = [
     piecesPerUnit: null,
     sampleCostGBP: 180,
     inspectorNotes: "Two fails: one broken zip, one heavy fading not shown in listing photos. Sizes skew 28-32 waist.",
-    demand: demand(5),
+    demand: {
+      buyerSegmentNamed: true,
+      priceBandMatchesLiveDemand: true,
+      sellThroughSignal: true,
+      repeatOrderPathKnown: true,
+      landedCostKnown: true,
+    },
   },
   {
     supplierId: "SUP-HBL",

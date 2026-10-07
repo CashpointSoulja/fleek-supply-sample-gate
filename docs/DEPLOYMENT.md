@@ -2,23 +2,22 @@
 
 The app is a static build (`dist/`) with no backend, secrets or paid services.
 
-## Option A: Workers static assets via Wrangler
-`wrangler.toml` is in the repo.
-```bash
-npm install
-npm run build
-npx wrangler login      # one-time, opens a browser
-npx wrangler deploy     # serves dist/ on <name>.<account>.workers.dev
-```
+## Live
+https://fleek-supply-sample-gate.pages.dev/
 
-## Option B: Cloudflare Pages connected to GitHub
-Dashboard → Workers & Pages → Create → Pages → Connect to Git → `CashpointSoulja/fleek-supply-sample-gate`.
-- Framework preset: None (or Vite)
+Cloudflare Pages, connected to `CashpointSoulja/fleek-supply-sample-gate`. A normal push to `main` triggers a new build and deploy. No force pushes.
+
 - Build command: `npm run build`
 - Build output directory: `dist`
 - Node version: 20 or later (`NODE_VERSION=20` if needed)
 
-Both stay within the free tier: static assets only, no Workers code, no KV, no paid add-ons.
+Free tier only: static assets, no Workers code, no KV, no paid add-ons, no secrets.
 
-## Status
-Not yet deployed: the Cloudflare account is not connected to the build environment (`wrangler whoami` → "You are not authenticated. Please run `wrangler login`."). No other host has been used.
+## Alternative: Workers static assets via Wrangler
+`wrangler.toml` is in the repo for a manual deploy from a machine logged in to the same account.
+```bash
+npm install
+npm run build
+npx wrangler login
+npx wrangler deploy
+```

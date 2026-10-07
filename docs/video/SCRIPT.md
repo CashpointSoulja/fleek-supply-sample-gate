@@ -14,9 +14,11 @@ Scenes: s1 overview, s2 sample entry, s3 evidence gap, s4 fail case, s5 limited 
 | 6 | 34.3s | 4.3s | s3 | Missing evidence never counts as a pass, so I request more evidence. |
 | 7 | 39.2s | 5.5s | s4 | Harbour Lane's fleece is a clear fail. Even the optimistic pass rate is under eighty percent. |
 | 8 | 45.2s | 3.8s | s4 | And the mix is fifteen points off what was promised. Reject. |
-| 9 | 49.5s | 7.3s | s5 | Northgate's denim passes all seven gates, including the demand-fit checklist. Quality alone can never approve a pilot. |
-| 10 | 57.4s | 5.6s | s5 | The pilot is capped at three hundred pieces, and it is not permission to buy stock or message anyone. |
-| 11 | 63.6s | 7.0s | s6 | Every call lands in a timestamped decision log. I export it as JSON, and the app reads it back and verifies it. |
-| 12 | 71.1s | 7.5s | s7 | A few samples can't prove a five million pound business. They can stop a bad first order, and earn a small, capped test. |
+| 9 | 49.5s | 8.5s | s5 | Northgate's denim passes all seven gates. Landed cost is a required check, so quality and a ticked count can never approve a pilot alone. |
+| 10 | 58.5s | 10.6s | s5 | The pilot is capped at three hundred pieces and two thousand five hundred pounds. The spend shown is only a sample-cost proxy, and none of it is permission to buy stock or message anyone. |
+| 11 | 69.7s | 7.0s | s6 | Every call lands in a timestamped decision log. I export it as JSON, and the app reads it back and verifies it. |
+| 12 | 77.2s | 7.5s | s7 | A few samples can't prove a five million pound business. They can stop a bad first order, and earn a small, capped test. |
+
+Scene 4 zooms into the demand-fit checklist (landed cost marked required), then the pilot panel: unit ceiling and £2,500 hard cap, the separately labelled sample-cost proxy, and the not-permission notice.
 
 Narration: free offline text-to-speech voice (en_GB "alba" medium), generated locally; no paid service.

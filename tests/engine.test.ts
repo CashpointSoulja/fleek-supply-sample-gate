@@ -15,7 +15,9 @@ describe("seeded cases", () => {
     expect(e.recommendation).toBe("LIMITED_PILOT");
     expect(e.pilot).not.toBeNull();
     expect(e.pilot!.units).toBeLessThanOrEqual(T.pilotCeilingUnits);
-    expect(e.pilot!.spendCapGBP).toBeLessThanOrEqual(T.pilotCeilingGBP);
+    expect(e.pilot!.ceilingGBP).toBe(T.pilotCeilingGBP);
+    expect(e.pilot!.sampleCostProxyGBP).toBe(1350);
+    expect(e.pilot!.sampleCostProxyGBP).toBeLessThanOrEqual(e.pilot!.ceilingGBP);
   });
   it("fail case rejects with quality and mix failures", () => {
     const e = evaluate(fail, T);
@@ -63,9 +65,24 @@ describe("boundary thresholds", () => {
     expect(evaluate(w({ sampleCostGBP: 320 }), T).gates.find((g) => g.id === "cost")!.status).toBe("pass");
     expect(evaluate(w({ sampleCostGBP: 320.4 }), T).recommendation).toBe("REJECT");
   });
-  it("demand checks exactly at minimum pass; one fewer blocks the pilot", () => {
-    expect(evaluate(w({ demand: { ...pass.demand, landedCostKnown: false } }), T).recommendation).toBe("LIMITED_PILOT");
-    expect(evaluate(w({ demand: { ...pass.demand, landedCostKnown: false, repeatOrderPathKnown: false } }), T).recommendation).toBe("REQUEST_MORE_EVIDENCE");
+  it("demand checks exactly at minimum pass (landed cost known); one fewer blocks the pilot", () => {
+    expect(evaluate(w({ demand: { ...pass.demand, repeatOrderPathKnown: false } }), T).recommendation).toBe("LIMITED_PILOT");
+    expect(evaluate(w({ demand: { ...pass.demand, repeatOrderPathKnown: false, sellThroughSignal: false } }), T).recommendation).toBe("REQUEST_MORE_EVIDENCE");
+  });
+  it("seed pass explicitly ticks landed cost", () => {
+    expect(pass.demand.landedCostKnown).toBe(true);
+  });
+  it("regression: every other check ticked but landed cost missing blocks the pilot", () => {
+    const e = evaluate(w({ demand: { ...pass.demand, landedCostKnown: false } }), T);
+    expect(e.demandChecks).toBe(4);
+    expect(e.recommendation).toBe("REQUEST_MORE_EVIDENCE");
+    expect(e.pilot).toBeNull();
+    expect(e.gates.find((g) => g.id === "demand")!.status).toBe("missing");
+    expect(e.missingEvidence.some((m) => m.startsWith("Landed cost unknown"))).toBe(true);
+    expect(canSelect(e, "LIMITED_PILOT").ok).toBe(false);
+  });
+  it("landed cost stays mandatory even if the count threshold is lowered to 1", () => {
+    expect(evaluate(w({ demand: { ...pass.demand, landedCostKnown: false } }), { ...T, minDemandChecks: 1 }).recommendation).toBe("REQUEST_MORE_EVIDENCE");
   });
 });
 
@@ -82,7 +99,8 @@ describe("quality alone cannot approve scale", () => {
   it("pilot is capped by GBP ceiling", () => {
     const e = evaluate(pass, { ...T, pilotCeilingGBP: 450 });
     expect(e.pilot!.units).toBe(100);
-    expect(e.pilot!.spendCapGBP).toBeLessThanOrEqual(450);
+    expect(e.pilot!.ceilingGBP).toBe(450);
+    expect(e.pilot!.sampleCostProxyGBP).toBeLessThanOrEqual(450);
   });
 });
 

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { parseCsv, toCsv } from "../src/engine/csv";
 import { DEFAULT_THRESHOLDS, evaluate } from "../src/engine/engine";
-import { buildCsvExport, buildJsonExport, readCsvExport, readJsonExport } from "../src/engine/exporter";
+import { buildCsvExport, buildJsonExport, readCsvExport, readJsonExport, validateEntry } from "../src/engine/exporter";
 import { IMPORT_COLUMNS, importInspectionsCsv } from "../src/engine/importer";
 import { SEED_INSPECTIONS } from "../src/engine/seeds";
 import { loadState } from "../src/engine/storage";
@@ -85,13 +85,16 @@ describe("inspection import", () => {
 const entry = (o: Partial<DecisionLogEntry> = {}): DecisionLogEntry => ({
   id: "D-1", at: "2026-10-07T09:00:00.000Z", supplierId: "SUP-NGT", supplierName: "Northgate Rag Sort",
   category: "denim", recommendation: "LIMITED_PILOT", selected: "LIMITED_PILOT", acceptanceRate: 0.95,
-  confidenceLower: 0.835, pilotUnits: 300, pilotSpendCapGBP: 1350, missingEvidence: [],
+  confidenceLower: 0.835, pilotUnits: 300, pilotCeilingGBP: 2500, pilotSampleCostProxyGBP: 1350, missingEvidence: [],
   failures: [], note: 'Cap at 300, "check zips"', inspectionFingerprint: "abcd1234", thresholdsFingerprint: "beef0001",
   ...o,
 });
 
 describe("export readback", () => {
-  const entries = [entry(), entry({ id: "D-2", supplierId: "SUP-KST", supplierName: "Kestrel Bale Traders", recommendation: "REQUEST_MORE_EVIDENCE", selected: "REQUEST_MORE_EVIDENCE", pilotUnits: null, pilotSpendCapGBP: null, missingEvidence: ["Inspect 18 more pieces.", "Units in bales"], note: "line1\nline2" })];
+  const entries = [entry(), entry({ id: "D-2", supplierId: "SUP-KST", supplierName: "Kestrel Bale Traders", recommendation: "REQUEST_MORE_EVIDENCE", selected: "REQUEST_MORE_EVIDENCE", pilotUnits: null, pilotCeilingGBP: null, pilotSampleCostProxyGBP: null, missingEvidence: ["Inspect 18 more pieces.", "Units in bales"], note: "line1\nline2" })];
+  it("a limited pilot without its true GBP ceiling is rejected on readback", () => {
+    expect(validateEntry(entry({ pilotCeilingGBP: null }), "E").join(" ")).toMatch(/must carry its ceiling/);
+  });
   it("JSON export reads back identically", () => {
     const json = JSON.stringify(buildJsonExport(entries, DEFAULT_THRESHOLDS, new Date("2026-10-07T10:00:00Z")));
     const r = readJsonExport(json);

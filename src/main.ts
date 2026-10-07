@@ -1,5 +1,5 @@
 import "./style.css";
-import { DEFAULT_THRESHOLDS, DEMAND_ITEMS, LABELS, PILOT_DISCLAIMER, THRESHOLD_LIMITS, canSelect, evaluate } from "./engine/engine";
+import { DEFAULT_THRESHOLDS, DEMAND_ITEMS, REQUIRED_DEMAND, LABELS, PILOT_DISCLAIMER, THRESHOLD_LIMITS, canSelect, evaluate } from "./engine/engine";
 import { fingerprint } from "./engine/hash";
 import { IMPORT_COLUMNS, importInspectionsCsv } from "./engine/importer";
 import { buildCsvExport, buildJsonExport, readCsvExport, readJsonExport } from "./engine/exporter";
@@ -188,8 +188,8 @@ function renderForm() {
       <label class="fld" data-field="unitsUnit"><span>Unit</span><span class="inp"><select name="unitsUnit">${["pcs", "kg", "bales"].map((u) => `<option ${i.unitsUnit === u ? "selected" : ""}>${u}</option>`).join("")}</select></span></label>
       <label class="fld wide" data-field="inspectorNotes"><span>Inspector notes</span><textarea name="inspectorNotes" rows="3" placeholder="What did the pieces actually look like?">${esc(i.inspectorNotes)}</textarea></label>
     </form>
-    <fieldset class="demand" id="demand"><legend>Demand-fit checklist <span class="mini">quality alone can never approve a pilot</span></legend>
-      ${DEMAND_ITEMS.map((d) => `<label class="check"><input type="checkbox" data-demand="${d.key}" ${i.demand[d.key] ? "checked" : ""}/> <span>${esc(d.label)}</span></label>`).join("")}
+    <fieldset class="demand" id="demand"><legend>Demand-fit checklist <span class="mini">quality alone never approves · landed cost required</span></legend>
+      ${DEMAND_ITEMS.map((d) => `<label class="check"><input type="checkbox" data-demand="${d.key}" ${i.demand[d.key] ? "checked" : ""}/> <span>${esc(d.label)}${d.key === REQUIRED_DEMAND ? ' <b class="req">required</b>' : ""}</span></label>`).join("")}
     </fieldset>
     <div id="form-errors"></div>`;
 }
@@ -249,7 +249,7 @@ function renderDecision() {
     </div>
     ${
       e.pilot
-        ? `<div class="pilot" id="pilot"><b>Pilot ceiling: ${e.pilot.units.toLocaleString("en-GB")} pcs · max ${gbp(e.pilot.spendCapGBP)}</b><p>${esc(e.pilot.basis)}</p><p class="disc">${esc(PILOT_DISCLAIMER)}</p><p class="mini">Share of a £5M annual GMV bet: ${((e.pilot.spendCapGBP / 5_000_000) * 100).toFixed(3)}% (illustrative). This is a test, not proof.</p></div>`
+        ? `<div class="pilot" id="pilot"><b>Pilot ceiling: ${e.pilot.units.toLocaleString("en-GB")} pcs · hard cap ${gbp(e.pilot.ceilingGBP)}</b><p>${esc(e.pilot.basis)}</p><p class="proxy" id="proxy"><b>Sample-cost proxy: ${gbp(e.pilot.sampleCostProxyGBP)}</b> = ${e.pilot.units.toLocaleString("en-GB")} pcs × the sample's cost per piece. Proxy only: not a quote and not a verified first-order total. Confirm landed first-order cost separately; the hard cap still applies.</p><p class="disc">${esc(PILOT_DISCLAIMER)}</p><p class="mini">The ${gbp(e.pilot.ceilingGBP)} hard cap is ${((e.pilot.ceilingGBP / 5_000_000) * 100).toFixed(2)}% of an illustrative £5M annual GMV bet. This is a test, not proof.</p></div>`
         : `<div class="pilot off"><b>No pilot ceiling</b><p>${esc(blockers || "Inputs are invalid.")}</p></div>`
     }
     <label class="fld wide"><span>Decision note (goes in the log)</span><textarea id="decision-note" rows="2" placeholder="Why this call?"></textarea></label>
@@ -302,7 +302,7 @@ function renderLog() {
       const stale = !insp || fingerprint(insp) !== d.inspectionFingerprint || fingerprint(state.thresholds) !== d.thresholdsFingerprint;
       return `<tr><td class="mono">${esc(d.at.replace("T", " ").slice(0, 19))} UTC</td><td>${esc(d.supplierName)}<br><span class="muted">${esc(categoryLabel(d.category))}</span></td>
       <td><span class="chip ${REC_CLASS[d.selected]}">${REC_SHORT[d.selected]}</span>${d.selected !== d.recommendation ? `<br><span class="mini">engine said ${esc(LABELS[d.recommendation])}</span>` : ""}</td>
-      <td>${pct(d.acceptanceRate)} / ${pct(d.confidenceLower)}</td><td>${d.pilotUnits !== null ? `${d.pilotUnits} pcs · ${gbp(d.pilotSpendCapGBP)}` : "—"}</td>
+      <td>${pct(d.acceptanceRate)} / ${pct(d.confidenceLower)}</td><td>${d.pilotUnits !== null ? `${d.pilotUnits} pcs · cap ${gbp(d.pilotCeilingGBP)}<br><span class="mini">proxy ${gbp(d.pilotSampleCostProxyGBP)}</span>` : "—"}</td>
       <td>${d.missingEvidence.length + d.failures.length ? esc([...d.failures, ...d.missingEvidence].join(" · ")) : "—"}</td><td>${esc(d.note) || '<span class="muted">—</span>'}</td>
       <td>${stale ? '<span class="st st-missing">Stale</span>' : '<span class="st st-pass">Current</span>'}</td></tr>`;
     })
@@ -466,7 +466,8 @@ function bind() {
         acceptanceRate: e.acceptanceRate,
         confidenceLower: e.confidenceLower,
         pilotUnits: selection === "LIMITED_PILOT" ? e.pilot!.units : null,
-        pilotSpendCapGBP: selection === "LIMITED_PILOT" ? e.pilot!.spendCapGBP : null,
+        pilotCeilingGBP: selection === "LIMITED_PILOT" ? e.pilot!.ceilingGBP : null,
+        pilotSampleCostProxyGBP: selection === "LIMITED_PILOT" ? e.pilot!.sampleCostProxyGBP : null,
         missingEvidence: e.missingEvidence,
         failures: e.failures,
         note,

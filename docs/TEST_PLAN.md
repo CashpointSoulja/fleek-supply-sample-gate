@@ -13,7 +13,7 @@
 ## Required coverage (from the brief)
 | Area | Tests |
 |---|---|
-| Boundary thresholds | Exactly-at and one-past for sample size, confidence bound, photos, mix gap, units, cost per piece, demand checks |
+| Boundary thresholds | Exactly-at and one-past for sample size, confidence bound, photos, mix gap, units, cost per piece, demand checks (count, with landed cost known) |
 | Zero samples | No rates, no division by zero, "No pieces inspected" first in missing evidence, no approval |
 | Missing photos | Zero expected/provided → missing; one below threshold → missing |
 | Invalid inputs | Negative, fractional, NaN, infinite, pass + fail ≠ total, observed > sample, photos > expected, mix > 100, blank supplier, invalid thresholds |
@@ -22,6 +22,8 @@
 
 ## Additional safety tests
 - Quality alone cannot approve: 40/40 pass with zero demand checks → more evidence, and the pilot button is refused.
+- Landed cost is mandatory: the seed pass ticks it explicitly; with every other check ticked but landed cost missing the result is more evidence (also when the count threshold is lowered to 1), and the pilot button is refused.
+- The pilot carries the true GBP hard cap and a separate sample-cost proxy; readback rejects a pilot entry without its ceiling.
 - Monotonic: removing photos, demand checks, units, cost or samples never improves the outcome.
 - Selection guard: reviewer can choose a more cautious option, never a more permissive one.
 - Pilot ceilings bind on units and on GBP.

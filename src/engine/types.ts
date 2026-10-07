@@ -79,7 +79,7 @@ export interface Evaluation {
   missingEvidence: string[];
   failures: string[];
   recommendation: Recommendation | null;
-  pilot: { units: number; spendCapGBP: number; basis: string } | null;
+  pilot: { units: number; ceilingGBP: number; sampleCostProxyGBP: number; basis: string } | null;
   fingerprint: string;
 }
 
@@ -94,7 +94,8 @@ export interface DecisionLogEntry {
   acceptanceRate: number | null;
   confidenceLower: number | null;
   pilotUnits: number | null;
-  pilotSpendCapGBP: number | null;
+  pilotCeilingGBP: number | null;
+  pilotSampleCostProxyGBP: number | null;
   missingEvidence: string[];
   failures: string[];
   note: string;

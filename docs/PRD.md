@@ -34,8 +34,8 @@ Make every sample-to-first-order call explicit, consistent and reviewable, so th
 | F2 | Pass rate judged on the 95% Wilson lower bound, not the raw rate | `wilson()` |
 | F3 | Missing evidence never passes; a gate is only Fail when even the optimistic reading fails | `evaluate()` |
 | F4 | Recommendation: any failure → Reject; else any missing → Request more evidence; else Limited pilot | `evaluate()` |
-| F5 | Demand-fit checklist (5 items, need 4 by default) is a gate, so quality alone cannot approve | `DEMAND_ITEMS` |
-| F6 | Pilot ceiling = lowest of unit ceiling, units available and GBP ceiling ÷ cost per piece | `evaluate()` |
+| F5 | Demand-fit checklist (5 items, need 4 by default) is a gate, so quality alone cannot approve. "Landed cost known" is mandatory on top of the count: 4 of 5 without it still blocks a pilot | `DEMAND_ITEMS`, `REQUIRED_DEMAND` |
+| F6 | Pilot ceiling = lowest of unit ceiling, units available and GBP ceiling ÷ cost per piece. The true GBP hard cap is shown separately from a sample-cost proxy (pilot pieces × sample cost per piece), which is labelled as a proxy and never as a quote or verified first-order total | `evaluate()` |
 | F7 | Pilot copy always states it is not permission to purchase or message anyone | `PILOT_DISCLAIMER` |
 | F8 | All nine thresholds editable and validated; changes re-score and mark old log entries stale | UI + `validateThresholds()` |
 | F9 | Invalid inputs are refused, never scored | `validateInspection()` |
@@ -46,12 +46,12 @@ Make every sample-to-first-order call explicit, consistent and reviewable, so th
 | F14 | No sign-in, no network calls, no outreach | whole app |
 
 ## Default thresholds (illustrative, editable)
-Min 30 pieces · pass-rate lower bound ≥ 80% · photos ≥ 90% · mix gap ≤ 10 pts · ≥ 500 pcs available · ≤ £8 sample cost per piece · ≥ 4 of 5 demand checks · pilot ≤ 300 pcs and ≤ £2,500.
+Min 30 pieces · pass-rate lower bound ≥ 80% · photos ≥ 90% · mix gap ≤ 10 pts · ≥ 500 pcs available · ≤ £8 sample cost per piece · ≥ 4 of 5 demand checks, landed cost always required · pilot ≤ 300 pcs and ≤ £2,500.
 
 ## Seeded cases
 | Supplier (synthetic) | Category | Outcome | Why |
 |---|---|---|---|
-| Northgate Rag Sort | Y2K denim | Limited pilot, 300 pcs / £1,350 | 38/40 pass, 98% photos, mix gap 2.5 pts, 5/5 demand checks |
+| Northgate Rag Sort | Y2K denim | Limited pilot, 300 pcs, £2,500 hard cap (sample-cost proxy £1,350) | 38/40 pass, 98% photos, mix gap 2.5 pts, 5/5 demand checks incl. landed cost |
 | Harbour Lane Vintage Co. | Sportswear fleece | Reject | 26/40 pass, mix 15 pts off promise |
 | Kestrel Bale Traders | Y2K denim | Request more evidence | 12 pieces, 56% photos, units in bales with no conversion, 2/5 demand checks |
 

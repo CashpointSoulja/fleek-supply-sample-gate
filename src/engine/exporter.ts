@@ -3,7 +3,7 @@ import { fingerprint } from "./hash";
 import { PILOT_DISCLAIMER } from "./engine";
 import type { DecisionLogEntry, Recommendation, Thresholds } from "./types";
 
-export const EXPORT_SCHEMA = "fleek-supply-sample-gate/decision-log@1";
+export const EXPORT_SCHEMA = "fleek-supply-sample-gate/decision-log@2";
 export const EXPORT_NOTICE =
   "Independent concept by Ayomide Ahmed. Not an official Fleek product. Synthetic suppliers and illustrative numbers only. " +
   PILOT_DISCLAIMER;
@@ -19,7 +19,8 @@ export const LOG_COLUMNS = [
   "acceptance_rate",
   "confidence_lower",
   "pilot_units",
-  "pilot_spend_cap_gbp",
+  "pilot_ceiling_gbp",
+  "pilot_sample_cost_proxy_gbp",
   "missing_evidence",
   "failures",
   "note",
@@ -59,7 +60,8 @@ export function buildCsvExport(entries: DecisionLogEntry[]): string {
     e.acceptanceRate === null ? "" : e.acceptanceRate.toFixed(4),
     e.confidenceLower === null ? "" : e.confidenceLower.toFixed(4),
     e.pilotUnits ?? "",
-    e.pilotSpendCapGBP ?? "",
+    e.pilotCeilingGBP ?? "",
+    e.pilotSampleCostProxyGBP ?? "",
     e.missingEvidence.join(" | "),
     e.failures.join(" | "),
     e.note,
@@ -90,11 +92,11 @@ export function validateEntry(e: unknown, where: string): string[] {
     const v = o[k];
     if (!(v === null || (typeof v === "number" && v >= 0 && v <= 1))) errs.push(`${where}: ${k} must be null or 0-1.`);
   }
-  for (const k of ["pilotUnits", "pilotSpendCapGBP"]) {
+  for (const k of ["pilotUnits", "pilotCeilingGBP", "pilotSampleCostProxyGBP"]) {
     const v = o[k];
     if (!(v === null || (typeof v === "number" && Number.isFinite(v) && v >= 0))) errs.push(`${where}: ${k} must be null or 0 or more.`);
   }
-  if (o.selected === "LIMITED_PILOT" && (o.pilotUnits === null || o.pilotSpendCapGBP === null))
+  if (o.selected === "LIMITED_PILOT" && (o.pilotUnits === null || o.pilotCeilingGBP === null || o.pilotSampleCostProxyGBP === null))
     errs.push(`${where}: limited pilot must carry its ceiling.`);
   for (const k of ["missingEvidence", "failures"]) {
     const v = o[k];
@@ -148,12 +150,13 @@ export function readCsvExport(text: string): { entries: DecisionLogEntry[]; erro
       acceptanceRate: optNum(r[7]),
       confidenceLower: optNum(r[8]),
       pilotUnits: optNum(r[9]),
-      pilotSpendCapGBP: optNum(r[10]),
-      missingEvidence: list(r[11]),
-      failures: list(r[12]),
-      note: r[13],
-      inspectionFingerprint: r[14],
-      thresholdsFingerprint: r[15],
+      pilotCeilingGBP: optNum(r[10]),
+      pilotSampleCostProxyGBP: optNum(r[11]),
+      missingEvidence: list(r[12]),
+      failures: list(r[13]),
+      note: r[14],
+      inspectionFingerprint: r[15],
+      thresholdsFingerprint: r[16],
     };
     const v = validateEntry(e, `Row ${idx + 2}`);
     if (v.length) errs.push(...v);

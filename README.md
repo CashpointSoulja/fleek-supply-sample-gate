@@ -6,7 +6,7 @@ A sample-to-first-order decision desk for a category bet. An operator enters wha
 
 Built for the problem described in Fleek's Special Projects Lead – Category Expansion role: category bets start with supply for buyers already on the marketplace, so the first supplier decision needs evidence, not a CRM.
 
-- Live demo: _pending Cloudflare deployment (see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md))_
+- Live demo: https://fleek-supply-sample-gate.pages.dev/ (Cloudflare Pages, free tier)
 - Walkthrough video: [docs/video](docs/video)
 
 ![Desk at 1366 px](docs/screenshots/desk-1366.png)
@@ -15,7 +15,7 @@ Built for the problem described in Fleek's Special Projects Lead – Category Ex
 - Three synthetic suppliers, two categories (Y2K denim, sportswear fleece), seeded with a pass, a fail and an insufficient-evidence case.
 - Sample entry: pieces, pass/fail grading (typed or per piece), photos, promised vs observed mix, units (pcs / kg / bales with explicit conversion), sample cost, inspector notes.
 - Seven gates: sample size, 95% lower bound of pass rate, photo completeness, mix gap, units available, cost per piece, demand fit.
-- Missing evidence never passes. Demand fit is its own gate, so quality alone cannot approve. Pilot size is capped by units and GBP ceilings.
+- Missing evidence never passes. Demand fit is its own gate, so quality alone cannot approve, and landed cost known is mandatory on top of the 4-of-5 count. Pilot size is capped by units and a GBP hard cap; the sample-cost figure is shown only as a proxy, never as a verified first-order total.
 - Nine editable thresholds; changes re-score everything and mark older decisions stale.
 - Timestamped decision log with CSV and JSON export, readback verification and fingerprints.
 - Strict CSV import with row-level errors and all-or-nothing behaviour.

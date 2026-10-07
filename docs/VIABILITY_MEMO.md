@@ -16,8 +16,8 @@ The Special Projects Lead – Category Expansion role (source S1, accessed 7 Oct
 | Hard to explain a call later | Timestamped log, fingerprints, stale flag, CSV/JSON export |
 
 ## Illustrative economics (not a forecast)
-- A bad first order of 300 pieces at about £4.50 per piece is roughly **£1,350** at risk, plus buyer trust. The default pilot ceiling keeps any single supplier test at or below **£2,500**.
-- Against an illustrative **£5M annual GMV** target, one pilot is about **0.03%** of the target. A pilot tests repeatability; it proves nothing about the £5M. The app prints this ratio next to the ceiling so no one confuses the two.
+- A bad first order of 300 pieces at about £4.50 per piece is roughly **£1,350** at risk on a sample-cost proxy (landed cost not included; the app shows this only as a proxy and enforces a separate £2,500 hard cap), plus buyer trust. The default pilot ceiling keeps any single supplier test at or below **£2,500**.
+- Against an illustrative **£5M annual GMV** target, one pilot's £2,500 hard cap is about **0.05%** of the target. A pilot tests repeatability; it proves nothing about the £5M. The app prints this ratio next to the ceiling so no one confuses the two.
 - The tool costs nothing to run: a static site, no backend, no paid APIs.
 
 ## Why build vs buy

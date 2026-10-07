@@ -173,3 +173,5 @@ textarea { resize: vertical; }
   .panel-h { align-items: flex-start; }
   .gates td:first-child { width: auto; }
 }
+.pilot .proxy { background: #fff; border: 1px dashed var(--g300, #d0d5dd); border-radius: 4px; padding: 6px 8px; margin-top: 8px; }
+.req { font-size: 10px; text-transform: uppercase; letter-spacing: .04em; background: var(--black); color: var(--yellow); border-radius: 3px; padding: 1px 5px; margin-left: 4px; }

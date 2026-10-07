@@ -41,6 +41,9 @@ export const DEMAND_ITEMS: { key: keyof DemandChecklist; label: string }[] = [
   { key: "landedCostKnown", label: "Landed cost known (freight, duties, last mile)" },
 ];
 
+/** Mandatory on top of the count: a pilot is never approved without a known landed cost. */
+export const REQUIRED_DEMAND: keyof DemandChecklist = "landedCostKnown";
+
 export const PILOT_DISCLAIMER =
   "Limited pilot is an internal recommendation only. It is not permission to purchase stock or to message any supplier or buyer.";
 
@@ -237,14 +240,16 @@ export function evaluate(i: Inspection, t: Thresholds): Evaluation {
 
   // Demand fit (quality alone can never approve)
   const demandChecks = DEMAND_ITEMS.filter((d) => i.demand[d.key]).length;
-  const demandOk = demandChecks >= t.minDemandChecks;
+  const landedKnown = i.demand[REQUIRED_DEMAND] === true;
+  const demandOk = demandChecks >= t.minDemandChecks && landedKnown;
   gates.push({
     id: "demand",
     label: "Demand-fit checklist",
     status: demandOk ? "pass" : "missing",
-    detail: `${demandChecks} of ${DEMAND_ITEMS.length} checks (need ${t.minDemandChecks})`,
+    detail: `${demandChecks} of ${DEMAND_ITEMS.length} checks (need ${t.minDemandChecks}); landed cost ${landedKnown ? "known" : "missing (required)"}`,
   });
-  if (!demandOk) missing.push(`Demand fit unproven: ${demandChecks} of ${t.minDemandChecks} required checks ticked.`);
+  if (demandChecks < t.minDemandChecks) missing.push(`Demand fit unproven: ${demandChecks} of ${t.minDemandChecks} required checks ticked.`);
+  if (!landedKnown) missing.push("Landed cost unknown (freight, duties, last mile): a required check before any pilot.");
 
   let recommendation: Recommendation;
   if (failures.length) recommendation = "REJECT";
@@ -258,7 +263,8 @@ export function evaluate(i: Inspection, t: Thresholds): Evaluation {
     const binding = capUnits === t.pilotCeilingUnits ? "unit ceiling" : capUnits === units ? "units available" : "GBP ceiling";
     pilot = {
       units: capUnits,
-      spendCapGBP: Math.min(t.pilotCeilingGBP, Math.round(capUnits * cpp * 100) / 100),
+      ceilingGBP: t.pilotCeilingGBP,
+      sampleCostProxyGBP: Math.round(capUnits * cpp * 100) / 100,
       basis: `Lowest of: unit ceiling ${t.pilotCeilingUnits} pcs, ${units.toLocaleString("en-GB")} pcs available, and ${byBudget.toLocaleString("en-GB")} pcs that £${t.pilotCeilingGBP.toLocaleString("en-GB")} buys at the sample's cost per piece. Binding limit: ${binding}.`,
     };
   }
@@ -291,7 +297,7 @@ export function canSelect(evaluation: Evaluation, selection: Selection): { ok: b
   if (!evaluation.valid || !evaluation.recommendation)
     return { ok: false, reason: "Fix the input errors before recording a decision." };
   if (selection === "LIMITED_PILOT" && evaluation.recommendation !== "LIMITED_PILOT")
-    return { ok: false, reason: "Limited pilot needs every gate to pass, including demand fit. Resolve the listed gaps first." };
+    return { ok: false, reason: "Limited pilot needs every gate to pass, including demand fit and a known landed cost. Resolve the listed gaps first." };
   if (RANK[selection] > RANK[evaluation.recommendation])
     return { ok: false, reason: "A decision cannot be more permissive than the evidence supports." };
   return { ok: true, reason: "" };

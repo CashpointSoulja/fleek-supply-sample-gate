@@ -23,7 +23,8 @@ Numerator: pieces passing on first-batch inspection ÷ pieces in first batch, mi
 ## Guardrails
 | Metric | Definition | Target |
 |---|---|---|
-| Pilot spend over ceiling | pilots with spend above the GBP ceiling ÷ pilots | 0 |
+| Pilot spend over ceiling | pilots whose confirmed landed first-order cost exceeds the GBP hard cap ÷ pilots (the in-app sample-cost proxy is not a confirmed cost) | 0 |
+| Pilots logged without landed cost known | limited pilots with landed cost unticked ÷ limited pilots | 0 (enforced by the engine) |
 | Overrides towards risk | entries where selected is more permissive than recommended ÷ entries | 0 (blocked) |
 | Stale decisions acted on | stale log entries acted on without a re-log ÷ stale entries | 0 |
 
